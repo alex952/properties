@@ -7,22 +7,23 @@ branches:
     only:
         - master
 
-addons:
-    sonarcloud:
-        organization: "neueda-blu-corner"
-
 before_script:
-    - wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-    - unzip build-wrapper-linux-x86.zip
-    - export PATH=$PATH:`pwd`/build-wrapper-linux-x86
     - mkdir build
     - cd build
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/install/lib
-
 script:
     - cmake -DCOVERAGE=ON -DTESTS=ON ../
-    - build-wrapper-linux-x86-64 --out-dir ./Linux-output make install
-    - ./install/bin/unittest
-    - gcov `find ./src/ ./test -regextype posix-egrep -regex ".*\\.(o)"`
+    - make install
     - cd ../
-    - 'if [ "$TRAVIS_PULL_REQUEST" = "false"  ]; then sonar-scanner; fi' # sonar only on non-PRs
+
+before_deploy:
+    - echo "Creating tar release."
+    - mkdir release
+    - tar czf release/${TAVIS_TAG}
+deploy:
+  provider: releases
+  api_key:
+    secure: uqN2dBf4OshozVRaiPzZT99JYV+4qbgcxhUZsqoiQycXufF1E0V45j0u+aTnBYvG8LriKwjBlgFCD/+Np6oVlthWPphy81FVaCv76I062dqv5liU7cTJeTV4tCdP6jHFoHhYAYvb00Rpl1WQ9eNyeRKssjw9ygCZ5leN8CyVcLcyms6OJpcwGcFXvoYjZOkKFRpM6ZoDCz7gY0feK1cuOdMSjtEhyArseMen9Gp5weengtCTcvb7pf1gt6Tpc2L8QuHKGcItRbl254woYjG+vVXBypHU92oJf1jvfz6oBXleITmPqfWeTgK41wA8UlpN1zf6c6YYPD++imgPFrEv9dXH+SfVTeuiQxEUjQiHiTtFptRS2nYXdCmSd5QOCbOKuzJ9ws+Zzu5Uvowv2EWBF4FI2cUeihmjoVrpS7vX09WMFu9IBOiVaaGmTJYMWLIqyCPLVqSE4+JtAUz1PJWJUKa8bPNTk3MBHTaWhYy9/0KSQ6yUl4V4AUEyv9wCHhypO2oKfzyAsZW7DQJQlCH9UJmXamwPcLadOodOk2a+pl6fcdpzgStD9kiWp5bC4XBFgQEZG9shovzcXBVjbl9mdT0ePdBHEw2279F5zT3M4hLh9qh45a4zTsGurQ8ViAk+pSqfhUAQP8FIq66VWpXSfR1FmJy+MkMwNmWOkM1XK+Q=
+  file: 'release/*'
+  on:
+      tags: true

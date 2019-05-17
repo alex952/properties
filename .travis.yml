@@ -15,7 +15,7 @@ script:
 before_deploy:
     - echo "Creating tar release."
     - mkdir release
-    - tar czf release/${TAVIS_TAG}
+    - tar czf release/${TAVIS_TAG} $(git ls-files)
     - echo "Done creating tar"
 deploy:
   provider: releases

@@ -3,10 +3,6 @@ compiler: gcc
 os:
     - linux
 
-branches:
-    only:
-        - master
-
 before_script:
     - mkdir build
     - cd build

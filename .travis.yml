@@ -20,6 +20,7 @@ before_deploy:
     - echo "Creating tar release."
     - mkdir release
     - tar czf release/${TAVIS_TAG}
+    - echo "Done creating tar"
 deploy:
   provider: releases
   api_key:
